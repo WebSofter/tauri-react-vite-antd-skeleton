@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import BasePageContainer from '@/components/layout/pageContainer';
+import { useEffect, useState } from "react";
+import BasePageContainer from "@/components/layout/pageContainer";
 import {
   Avatar,
   BreadcrumbProps,
@@ -11,21 +11,22 @@ import {
   Row,
   Table,
   Tag,
-} from 'antd';
-import { webRoutes } from '@/routes/web';
-import { Link } from 'react-router-dom';
-import StatCard from '@/components/dashboard/statCard';
-import { AiOutlineStar, AiOutlineTeam } from 'react-icons/ai';
-import Icon from '@ant-design/icons';
-import { BiCommentDetail, BiPhotoAlbum } from 'react-icons/bi';
-import { MdOutlineArticle, MdOutlinePhoto } from 'react-icons/md';
-import { StatisticCard } from '@ant-design/pro-components';
-import LazyImage from '@/components/lazy-image';
-import { User } from '@/interfaces/user';
-import http from '@/lib/http';
-import { apiRoutes } from '@/routes/api';
-import { handleErrorResponse } from '@/lib/utils';
-import { Review } from '@/interfaces/review';
+} from "antd";
+import { webRoutes } from "@/routes/web";
+import { Link } from "react-router-dom";
+import StatCard from "@/components/dashboard/statCard";
+import { AiOutlineStar, AiOutlineTeam } from "react-icons/ai";
+import Icon from "@ant-design/icons";
+import { BiCommentDetail, BiPhotoAlbum } from "react-icons/bi";
+import { MdOutlineArticle, MdOutlinePhoto } from "react-icons/md";
+import { StatisticCard } from "@ant-design/pro-components";
+import LazyImage from "@/components/lazy-image";
+import { User } from "@/interfaces/user";
+import http from "@/lib/http";
+import { apiRoutes } from "@/routes/api";
+import { handleErrorResponse } from "@/lib/utils";
+import { Review } from "@/interfaces/review";
+import { invoke } from "@tauri-apps/api/core";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -94,9 +95,42 @@ const DashboardPage = () => {
       });
   };
 
+  const [greetMsg, setGreetMsg] = useState("");
+  const [name, setName] = useState("");
+
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+    setGreetMsg(await invoke("greet", { name }));
+  }
+
+
   return (
     <BasePageContainer breadcrumb={breadcrumb} transparent={true}>
       <Row gutter={24}>
+        <Col
+          xl={24}
+          lg={24}
+          md={24}
+          sm={24}
+          xs={24}
+          style={{ marginBottom: 24 }}
+        >
+          <form
+            className="row"
+            onSubmit={(e) => {
+              e.preventDefault();
+              greet();
+            }}
+          >
+            <p>{greetMsg}</p>
+            <input
+              id="greet-input"
+              onChange={(e) => setName(e.currentTarget.value)}
+              placeholder="Enter a name..."
+            />
+            <button type="submit">Greet</button>
+          </form>
+        </Col>
         <Col xl={6} lg={6} md={12} sm={24} xs={24} style={{ marginBottom: 24 }}>
           <StatCard
             loading={loading}
@@ -157,21 +191,21 @@ const DashboardPage = () => {
             <StatisticCard.Group direction="row">
               <StatisticCard
                 statistic={{
-                  title: 'XYZ',
+                  title: "XYZ",
                   value: loading ? 0 : 123,
                 }}
               />
               <StatisticCard
                 statistic={{
-                  title: 'Progress',
-                  value: 'ABC',
+                  title: "Progress",
+                  value: "ABC",
                 }}
                 chart={
                   <Progress
                     className="text-rfprimary"
                     percent={loading ? 0 : 75}
                     type="circle"
-                    size={'small'}
+                    size={"small"}
                     strokeColor={CONFIG.theme.accentColor}
                   />
                 }
@@ -234,25 +268,25 @@ const DashboardPage = () => {
               dataSource={reviews}
               columns={[
                 {
-                  title: 'Title',
-                  dataIndex: 'title',
-                  key: 'title',
-                  align: 'left',
+                  title: "Title",
+                  dataIndex: "title",
+                  key: "title",
+                  align: "left",
                 },
                 {
-                  title: 'Year',
-                  dataIndex: 'year',
-                  key: 'year',
-                  align: 'center',
+                  title: "Year",
+                  dataIndex: "year",
+                  key: "year",
+                  align: "center",
                   render: (_, row: Review) => (
                     <Tag color={row.color}>{row.year}</Tag>
                   ),
                 },
                 {
-                  title: 'Star',
-                  dataIndex: 'star',
-                  key: 'star',
-                  align: 'center',
+                  title: "Star",
+                  dataIndex: "star",
+                  key: "star",
+                  align: "center",
                   render: (_, row: Review) => (
                     <Rate disabled defaultValue={row.star} />
                   ),
